@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voyage — AI Travel Concierge</title>
+
+<script defer src="https://www.gstatic.com/chat-messenger/sdk/prod/v1.16/chat-messenger.js"></script>
+<link rel="stylesheet" href="https://www.gstatic.com/chat-messenger/sdk/prod/v1.16/themes/chat-messenger-default.css">
+<link rel="stylesheet" href="https://www.gstatic.com/chat-messenger/sdk/prod/v1.16/themes/chat-messenger-layout.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap');
+
+:root{
+  --ink:#102033;
+  --muted:#718096;
+  --blue:#246bfe;
+  --cream:#f7f5ef;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",Arial,sans-serif}
+.page{min-height:100vh;overflow:hidden}
+
+/* NAV */
+nav{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  height:88px;padding:0 5.5%;
+  display:flex;align-items:center;justify-content:space-between;
+  color:white;
+}
+.logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:20px}
+.logo-mark{
+  width:39px;height:39px;border-radius:50%;background:white;color:var(--blue);
+  display:grid;place-items:center;font-size:18px;
+}
+.navlinks{display:flex;gap:34px;font-size:14px;font-weight:600}
+.navlinks a{color:white;text-decoration:none;opacity:.92}
+.navpill{
+  padding:12px 18px;border:1px solid rgba(255,255,255,.55);
+  border-radius:999px;color:#fff;font-size:13px;font-weight:700;
+}
+
+/* HERO */
+.hero{
+  min-height:760px;position:relative;color:white;
+  display:flex;align-items:center;
+  background:
+    linear-gradient(90deg,rgba(5,20,36,.74) 0%,rgba(8,29,47,.38) 50%,rgba(8,29,47,.16) 100%),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=88")
+    center/cover no-repeat;
+}
+.hero:after{
+  content:"";position:absolute;inset:auto 0 0;height:180px;
+  background:linear-gradient(transparent,var(--cream));
+}
+.hero-content{position:relative;z-index:2;width:min(1200px,89%);margin:70px auto 0}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;
+  border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);border-radius:999px;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.4px;
+}
+.kicker i{width:7px;height:7px;background:#73e6a1;border-radius:50%}
+h1{
+  font-family:"Playfair Display",serif;font-weight:500;
+  font-size:clamp(58px,8vw,104px);line-height:.94;letter-spacing:-4px;
+  max-width:850px;margin:26px 0 22px;
+}
+.hero-copy{max-width:570px;font-size:18px;line-height:1.65;color:rgba(255,255,255,.86)}
+.hero-actions{display:flex;gap:13px;margin-top:30px;align-items:center}
+.primary{
+  background:white;color:#15304b;border:0;border-radius:999px;padding:15px 22px;
+  font-weight:700;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.16)
+}
+.secondary{
+  color:white;text-decoration:none;padding:14px 20px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.4);font-size:14px;font-weight:600
+}
+
+/* FLOATING CHAT HINT */
+.chat-hint{
+  position:absolute;right:6%;bottom:125px;z-index:3;
+  width:285px;padding:17px 18px;border-radius:20px;
+  background:rgba(255,255,255,.92);color:var(--ink);
+  box-shadow:0 20px 50px rgba(0,0,0,.2);backdrop-filter:blur(12px)
+}
+.chat-hint small{display:block;color:#778398;margin-bottom:5px}
+.chat-hint strong{font-size:14px}
+.chat-arrow{
+  position:absolute;right:22px;bottom:-25px;width:50px;height:50px;
+  border-right:2px solid white;border-bottom:2px solid white;transform:rotate(30deg)
+}
+
+/* TRUST */
+.trust{width:min(1200px,89%);margin:-35px auto 0;position:relative;z-index:4}
+.trust-inner{
+  background:white;border-radius:24px;padding:25px 30px;
+  box-shadow:0 20px 60px rgba(20,35,55,.1);
+  display:flex;align-items:center;justify-content:space-between;gap:20px
+}
+.trust-title{font-size:12px;color:#9aa5b5;text-transform:uppercase;letter-spacing:1.4px;font-weight:700}
+.stats{display:flex;gap:45px}
+.stat strong{font-size:23px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* EXPERIENCE */
+.section{width:min(1200px,89%);margin:100px auto}
+.section-label{font-size:12px;color:var(--blue);font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
+.section h2{
+  font-family:"Playfair Display",serif;font-size:52px;font-weight:500;
+  letter-spacing:-2px;margin:12px 0 45px
+}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{
+  min-height:390px;border-radius:27px;overflow:hidden;position:relative;
+  color:white;background:#17314b
+}
+.card:nth-child(1){background:url("https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1000&q=85") center/cover}
+.card:nth-child(2){background:url("https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=85") center/cover}
+.card:nth-child(3){background:url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=85") center/cover}
+.card:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(3,17,29,.86))}
+.card-content{position:absolute;z-index:2;bottom:25px;left:25px;right:25px}
+.card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.78}
+.card h3{font-family:"Playfair Display",serif;font-size:30px;margin:7px 0}
+.card p{font-size:13px;line-height:1.5;opacity:.85;margin:0}
+
+/* HOW IT WORKS */
+.workflow{
+  background:#102033;color:white;padding:90px 0
+}
+.workflow-inner{width:min(1200px,89%);margin:auto}
+.workflow h2{font-family:"Playfair Display",serif;font-size:52px;font-weight:500;margin:12px 0 48px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.12)}
+.step{padding:30px 25px;background:#102033;min-height:190px}
+.step-num{font-size:12px;color:#82a9ff;margin-bottom:30px}
+.step h3{font-size:18px;margin:0 0 9px}
+.step p{font-size:13px;line-height:1.6;color:#aeb9c8;margin:0}
+
+/* FOOTER */
+footer{padding:45px 5.5%;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8490a0}
+footer strong{color:var(--ink);font-size:15px}
+
+/* MESSENGER */
+chat-messenger{
+  --chat-messenger-container-width:420px;
+  --chat-messenger-container-height:680px;
+}
+
+@media(max-width:850px){
+  .navlinks{display:none}
+  .hero{min-height:700px}
+  h1{letter-spacing:-2px}
+  .chat-hint{display:none}
+  .trust-inner{flex-direction:column;align-items:flex-start}
+  .stats{gap:25px;flex-wrap:wrap}
+  .cards,.steps{grid-template-columns:1fr}
+  .section h2,.workflow h2{font-size:40px}
+  .card{min-height:320px}
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+<nav>
+  <div class="logo"><div class="logo-mark">✈</div> VOYAGE AI</div>
+  <div class="navlinks">
+    <a href="#experience">Experience</a>
+    <a href="#how">How it works</a>
+    <a href="#concierge">Concierge</a>
+  </div>
+  <div class="navpill">AI Travel Concierge</div>
+</nav>
+
+<section class="hero" id="concierge">
+  <div class="hero-content">
+    <div class="kicker"><i></i> Your personal AI travel concierge</div>
+    <h1>Go further.<br>We'll handle the rest.</h1>
+    <p class="hero-copy">
+      From the first flight search to unexpected cancellations,
+      your intelligent travel companion plans, coordinates and replans
+      the journey around you.
+    </p>
+    <div class="hero-actions">
+      <button class="primary" onclick="document.querySelector('chat-messenger').shadowRoot?.querySelector('chat-toggle-dialog-button')?.click()">
+        ✦ Start planning with AI
+      </button>
+      <a class="secondary" href="#experience">Explore the experience ↓</a>
+    </div>
+  </div>
+
+  <div class="chat-hint">
+    <small>Try asking</small>
+    <strong>“Plan me a 5-day trip to Boston.”</strong>
+    <div class="chat-arrow"></div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="trust-inner">
+    <div class="trust-title">One concierge.<br>Every part of your journey.</div>
+    <div class="stats">
+      <div class="stat"><strong>01</strong><span>AI Concierge</span></div>
+      <div class="stat"><strong>24/7</strong><span>Travel assistance</span></div>
+      <div class="stat"><strong>∞</strong><span>Replanning possibilities</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="experience">
+  <div class="section-label">Travel, intelligently</div>
+  <h2>Everything your trip needs.</h2>
+
+  <div class="cards">
+    <article class="card">
+      <div class="card-content">
+        <div class="card-tag">01 · Discover</div>
+        <h3>Flights & Routes</h3>
+        <p>Find options around your dates, preferences and journey goals.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-content">
+        <div class="card-tag">02 · Stay</div>
+        <h3>Hotels & Stays</h3>
+        <p>Match your trip with stays that fit your location, comfort and budget.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-content">
+        <div class="card-tag">03 · Experience</div>
+        <h3>Explore & Enjoy</h3>
+        <p>Turn your destinations into a personalized, day-by-day itinerary.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="workflow" id="how">
+  <div class="workflow-inner">
+    <div class="section-label">Beyond a chatbot</div>
+    <h2>When plans change,<br>your AI adapts.</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Understand</h3>
+        <p>Your concierge understands the trip, preferences and context.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Coordinate</h3>
+        <p>Flight, hotel, transport and itinerary decisions work together.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Detect</h3>
+        <p>When disruption happens, the agent identifies what has changed.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Replan</h3>
+        <p>A revised journey is generated so you can keep moving.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>VOYAGE AI</strong>
+  <span>Intelligent travel, from takeoff to touchdown.</span>
+</footer>
+
+<!-- Google Conversational AI Messenger -->
+<script>
+window.addEventListener("chat-messenger-loaded", () => {
+  chatSdk.registerContext(
+    chatSdk.prebuilts.ces.createContext({
+      deploymentName:
+        "projects/376617324041/locations/us/apps/3469c334-8351-4cd6-9633-366befaad5e1/deployments/474998ed-925e-442f-9a5b-c68f597e3c29",
+      tokenBroker: {
+        enableTokenBroker: true,
+        enableRecaptcha: false
+      }
+    })
+  );
+});
+</script>
+
+<chat-messenger url-allowlist="*">
+  <chat-messenger-container
+    chat-title="AI Travel Concierge"
+    chat-title-icon="https://gstatic.com/dialogflow-console/common/assets/ccai-favicons/conversational_agents.png"
+    enable-file-upload
+    enable-audio-input>
+    <chat-reset-session-button slot="titlebar-actions" title-text="Start new chat"></chat-reset-session-button>
+    <chat-toggle-dialog-button slot="titlebar-actions" title-text-expanded="Collapse" title-text-collapsed="Expand"></chat-toggle-dialog-button>
+    <chat-messenger-close-button slot="titlebar-actions" title-text="Close"></chat-messenger-close-button>
+  </chat-messenger-container>
+</chat-messenger>
+
+</div>
+</body>
+</html>
